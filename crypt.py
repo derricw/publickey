@@ -8,7 +8,7 @@ simple pure-python public-key block cypher implementation
 """
 from maths import find_random_prime, find_random_coprime, multinv
 
-
+DEFAULT_EXP = 65537
 BLOCK_SIZE = 128 # in bytes
 
 def text2int(msg, block_size=BLOCK_SIZE):
@@ -53,6 +53,15 @@ def decrypt(encrypted_blocks, key, block_size=BLOCK_SIZE):
     decrypted_blocks = [pow(block, d, n) for block in encrypted_blocks]
     return int2text(decrypted_blocks, block_size)
 
+def encrypt_to_file(msg, key, path, block_size=BLOCK_SIZE):
+    data = encrypt(msg, key, block_size)
+    with open(path, 'w') as f:
+        f.write("message_length: {}".format(len(msg)))
+        f.write("public_key_used: {}".format(key))
+        f.write("block_size: {}".format(block_size))
+        f.write("\n")
+        f.write("message: \n{}".format("\n".join(data)))
+
 def get_key_prime(size=1024):
     """ Gets a random prime of the specified key size (bits).
     """
@@ -61,10 +70,9 @@ def get_key_prime(size=1024):
 def get_key_coprime(n, size):
     """ Gets a random coprime for N that is the specified key size (bits).
     """
-    return find_random_coprime(n, 2**(size - 1), 2**size)
+    return find_random_coprime(n, DEFAULT_EXP, 2**size)
 
-
-def generate_key_pair(key_size):
+def generate_key_pair(key_size, use_default_exponent=True):
     """ Generates a public and private key of the specified size (bits).
     """
     # find p, q, n
@@ -77,7 +85,10 @@ def generate_key_pair(key_size):
 
     # create e that is coprime to (p-1)*(q-1)
     x = (p-1)*(q-1)
-    e = get_key_coprime(x, key_size)
+    if use_default_exponent:
+        e = DEFAULT_EXP
+    else:
+        e = get_key_coprime(x, key_size)
 
     # create d that is multiplicative inverse of e mod x
     d = multinv(x, e)
@@ -86,6 +97,8 @@ def generate_key_pair(key_size):
     private_key = n, d
 
     return public_key, private_key
+
+
 
 
 def main():
