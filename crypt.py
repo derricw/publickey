@@ -3,9 +3,11 @@ encrypt.py
 
 @author: derricw
 
-simple pure-python public-key cryptography implementation
+simple pure-python public-key block cypher implementation
 
 """
+from maths import find_random_prime, find_random_coprime, multinv
+
 
 BLOCK_SIZE = 128 # in bytes
 
@@ -40,17 +42,50 @@ def int2text(ints, block_size=BLOCK_SIZE):
 def encrypt(msg, key, block_size=BLOCK_SIZE):
     """ Encodes a message using a public key.
     """
-    e, n = key
+    n, e = key
     blocks = text2int(msg, block_size)
     return [pow(block, e, n) for block in blocks]
-
 
 def decrypt(encrypted_blocks, key, block_size=BLOCK_SIZE):
     """ Decryptes a message using a private key.
     """
-    d, n = key
+    n, d = key
     decrypted_blocks = [pow(block, d, n) for block in encrypted_blocks]
     return int2text(decrypted_blocks, block_size)
+
+def get_key_prime(size=1024):
+    """ Gets a random prime of the specified key size (bits).
+    """
+    return find_random_prime(2**(size-1), 2**size)
+
+def get_key_coprime(n, size):
+    """ Gets a random coprime for N that is the specified key size (bits).
+    """
+    return find_random_coprime(n, 2**(size - 1), 2**size)
+
+
+def generate_key_pair(key_size):
+    """ Generates a public and private key of the specified size (bits).
+    """
+    # find p, q, n
+    p, q = 0, 0
+    while p == q:
+        p = get_key_prime(key_size)
+        q = get_key_prime(key_size)
+
+    n = p * q
+
+    # create e that is coprime to (p-1)*(q-1)
+    x = (p-1)*(q-1)
+    e = get_key_coprime(x, key_size)
+
+    # create d that is multiplicative inverse of e mod x
+    d = multinv(x, e)
+
+    public_key = n, e
+    private_key = n, d
+
+    return public_key, private_key
 
 
 def main():
@@ -68,14 +103,24 @@ def main():
 
     # sample keys from:
     # https://stackoverflow.com/questions/8539441/private-public-encryption-in-python-with-standard-library
-    sample_public_key = (65537, 5551201688147)
-    sample_private_key = (109182490673, 5551201688147)
+    sample_public_key = (5551201688147, 65537)
+    sample_private_key = (5551201688147, 109182490673)
 
     cyphertext = encrypt(msg, sample_public_key, block_size=5)
     print("Encrypted: {}".format(cyphertext))
     plaintext = decrypt(cyphertext, sample_private_key, block_size=5)
     print("Plaintext: {}".format(plaintext))
 
+    print("Little Prime: {}".format(get_key_prime(32)))
+    print("Medium Prime: {}".format(get_key_prime(256)))
+    print("Big Prime: {}".format(get_key_prime(1024)))
+
+    # generate some real keys and encrype/decrypt
+    public, private = generate_key_pair(512)
+    cyphertext = encrypt(msg, public, block_size=64)
+    print("Encrypted: {}".format(cyphertext))
+    plaintext = decrypt(cyphertext, private, block_size=64)
+    print("Plaintext: {}".format(plaintext))
 
 
 
