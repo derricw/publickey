@@ -45,7 +45,7 @@ def encrypt(msg, key, block_size=DEFAULT_BLOCK_SIZE):
     """ Encrypts a message using a public key.
     """
     n, e, size = key
-    if size <= block_size * 8:
+    if size < block_size * 8:
         raise Exception("Key bits must be larger than block bits.")
     blocks = text2int(msg, block_size)
     return [pow(block, e, n) for block in blocks]
