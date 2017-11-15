@@ -12,7 +12,7 @@ DEFAULT_EXP = 65537           # apparently this is industry standard
 DEFAULT_BLOCK_SIZE = 128      # in bytes
 
 def text2int(msg, block_size=DEFAULT_BLOCK_SIZE):
-    """ Converts a message into integer blocks that can be encoded.
+    """ Converts a message into integer blocks that can be encrypted.
         
         Message doesn't need to be padded,
             but any trailing nulls will be stripped.
@@ -44,7 +44,9 @@ def int2text(ints, block_size=DEFAULT_BLOCK_SIZE):
 def encrypt(msg, key, block_size=DEFAULT_BLOCK_SIZE):
     """ Encrypts a message using a public key.
     """
-    n, e, _ = key
+    n, e, size = key
+    if size <= block_size * 8:
+        raise Exception("Key bits must be larger than block bits.")
     blocks = text2int(msg, block_size)
     return [pow(block, e, n) for block in blocks]
 
@@ -87,6 +89,7 @@ def generate_key_pair(key_size, use_default_exponent=True):
     n = p * q
 
     # create e that is coprime to (p-1)*(q-1)
+    # or use default exponent
     x = (p-1)*(q-1)
     if use_default_exponent:
         e = DEFAULT_EXP
@@ -116,10 +119,11 @@ def main():
     assert plaintext == msg
 
     public, private = generate_key_pair(256)
+    print("Keys: {}, {}".format(public, private))
 
-    cyphertext = encrypt(msg, public, block_size=5)
+    cyphertext = encrypt(msg, public, block_size=16)
     print("Encrypted: {}".format(cyphertext))
-    plaintext = decrypt(cyphertext, private, block_size=5)
+    plaintext = decrypt(cyphertext, private, block_size=16)
     print("Plaintext: {}".format(plaintext))
 
 
