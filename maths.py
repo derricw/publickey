@@ -50,10 +50,10 @@ def rabin_miller(n, k=5):
                     return False
                 else:
                     x = (x ** 2) % n
-                    i = i + 1
+                    i += 1
     return True
 
-FIRST_THOUSAND_PRIMES = prime_sieve(1000)
+FIRST_FEW_PRIMES = prime_sieve(1000)
 
 def is_prime(n):
     """ Fancy prime test that first checks low primes, then uses
@@ -62,12 +62,10 @@ def is_prime(n):
     if n < 2:
         return False
 
-    low_primes = FIRST_THOUSAND_PRIMES
-
-    if n in low_primes:
+    if n in FIRST_FEW_PRIMES:
         return True
 
-    for prime in low_primes:
+    for prime in FIRST_FEW_PRIMES:
         if n % prime == 0:
             return False
 
@@ -86,7 +84,7 @@ def find_random_coprime(n, start, stop):
         is coprime with n
     """
     while True:
-        e = find_random_prime(start, stop)
+        e = random.randrange(start, stop)
         if gcd(e, n) == 1:
             return e
 
