@@ -53,6 +53,8 @@ def rabin_miller(n, k=5):
                     i = i + 1
     return True
 
+FIRST_THOUSAND_PRIMES = prime_sieve(1000)
+
 def is_prime(n):
     """ Fancy prime test that first checks low primes, then uses
         Rabin-Miller.
@@ -60,7 +62,7 @@ def is_prime(n):
     if n < 2:
         return False
 
-    low_primes = prime_sieve(1000)
+    low_primes = FIRST_THOUSAND_PRIMES
 
     if n in low_primes:
         return True
