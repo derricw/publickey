@@ -3,7 +3,7 @@ dcrypt.py
 
 @author: derricw
 
-simple pure-python public-key block cypher implementation.
+simple pure-python RSA public-key block cypher implementation.
 
 """
 from maths import find_random_prime, find_random_coprime, multinv
@@ -77,7 +77,7 @@ def get_key_coprime(n, size):
     """
     return find_random_coprime(n, DEFAULT_EXP, 2**size)
 
-def generate_key_pair(key_size, use_default_exponent=True):
+def generate_key_pair(key_size=2048, use_default_exponent=True):
     """ Generates a public and private key of the specified size (bits).
     """
     # find p, q, n
