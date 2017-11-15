@@ -10,7 +10,6 @@ def simple_is_prime(n):
     if n < 2:
         return False
     for i in range(2, int(math.sqrt(n)) + 1):
-        # only need to check up to the sqrt of N
         if n % i == 0:
             return False
     return True
@@ -33,6 +32,7 @@ def rabin_miller(n, k=5):
     """ Rabin-Miller prime testing algorithm.
     see: https://en.wikipedia.org/wiki/Miller%E2%80%93Rabin_primality_test
     """
+    # find r and d
     d = n-1
     r = 0
     while d % 2 == 0:
@@ -49,8 +49,8 @@ def rabin_miller(n, k=5):
                 if i == (r-1):
                     return False
                 else:
-                    i = i + 1
                     x = (x ** 2) % n
+                    i = i + 1
     return True
 
 def is_prime(n):
@@ -91,7 +91,7 @@ def find_random_coprime(n, start, stop):
 def multinv(mod, val):
     """ Multiplicative inverse of a value with a given modulus.
 
-        that is, an integer x such that ax is congruent to 1 modulo M
+        that is, an integer x such that a*x is congruent to 1 modulo M
 
         Does this require mod and val to be coprime?
 
