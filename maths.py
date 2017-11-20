@@ -1,3 +1,9 @@
+"""
+maths.py
+
+Some useful math functions for public key cryptography.
+
+"""
 import math
 import random
 from fractions import gcd
@@ -75,6 +81,7 @@ def find_random_prime(start, stop):
     """ Finds a random prime within specified range.
     """
     while True:
+        #WARNING: Not a strong RNG.  Use a better one.
         n = random.randrange(start, stop)
         if is_prime(n):
             return n

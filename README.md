@@ -1,3 +1,3 @@
 # publickey
 
-a pure-python RSA public key cryptography implementation.
+a simple RSA public key cryptography implementation.
