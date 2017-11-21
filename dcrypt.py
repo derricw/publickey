@@ -5,6 +5,8 @@ dcrypt.py
 
 simple pure-python RSA public-key block cypher implementation.
 
+Many parts paraphrased from code in https://inventwithpython.com/
+Take a look at their license here: https://opensource.org/licenses/BSD-2-Clause
 """
 from maths import find_random_prime, find_random_coprime, multinv
 
